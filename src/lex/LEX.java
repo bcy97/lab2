@@ -62,6 +62,8 @@ public class LEX {
 				resToken.add(temp[1]);
 			}
 		}
+		
+		resToken.add("$");
 
 		return resToken;
 

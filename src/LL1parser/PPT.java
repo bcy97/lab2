@@ -11,6 +11,7 @@ public class PPT {
 		HashMap<String, Integer> SItem = new HashMap<>();
 		SItem.put("id", 0);
 		SItem.put("if", 1);
+		SItem.put("}", 2);
 		SItem.put("$", 2);
 		PPT.put("S", SItem);
 		

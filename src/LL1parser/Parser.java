@@ -29,6 +29,8 @@ public class Parser {
 		ArrayList<String> Vt = Grammar.getTerminal();
 		ArrayList<String> Vn = Grammar.getNoTerminal();
 
+		HashMap<Integer, ArrayList<String>> gramItems=Grammar.getGram();
+		
 		// 开始时将$和S压入栈
 		stack.push("$");
 		stack.push("S");
@@ -37,20 +39,27 @@ public class Parser {
 		int ip = 0;
 
 		while (X != "$") {
-			if (tokens.get(ip) == X) {
+			String nowToken=tokens.get(ip);
+			if (nowToken.equals(X)) {
 				stack.pop();
 				ip++;
 			} else if (Vt.contains(X)) {
 				System.out.println("error");
 				return;
-			} else if (ppt.get(X).get(tokens.get(ip)) == null) {
+			} else if (ppt.get(X).get(nowToken) == null) {
 				System.out.println("error");
 				return;
 			} else {
-				String gen = Grammar.getGrammar(ppt.get(X).get(tokens.get(ip)));
+				int num=ppt.get(X).get(nowToken);
+				String gen = Grammar.getGrammar(num);
 				System.out.println(gen);
 				stack.pop();
-				
+				ArrayList<String> stackItems=gramItems.get(num);
+				for (String item : stackItems) {
+					if (!item.equals("e")) {
+						stack.push(item);
+					}
+				}
 			}
 			X = stack.peek();
 		}
