@@ -1,15 +1,12 @@
 package lex;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import dfa.DFA;
 import dfa.DFABulider;
@@ -32,7 +29,7 @@ public class LEX {
 			BufferedReader reader = new BufferedReader(new FileReader(inFile));
 			String string = reader.readLine();
 
-			// 不停的读入字�?
+			// 不停的读入字符
 			while (string != null) {
 				String[] strs = string.split(" ");
 
@@ -40,7 +37,7 @@ public class LEX {
 					if (str.equals("")) {
 						continue;
 					}
-					String result = judgeToken(str, dfas);
+					String result = judgeToken(str.trim(), dfas);
 					tokens.add(result);
 				}
 
@@ -54,8 +51,19 @@ public class LEX {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		ArrayList<String> resToken = new ArrayList<>();
 
-		return tokens;
+		for (String string : tokens) {
+			String[] temp =string.split(",");
+			if (temp[0].equals("id")||temp[0].equals("number")) {
+				resToken.add(temp[0]);
+			}else {
+				resToken.add(temp[1]);
+			}
+		}
+
+		return resToken;
 
 	}
 
@@ -102,10 +110,10 @@ public class LEX {
 
 	public static String judgeToken(String string, HashMap<String, DFA> dfas) {
 
-		// 先判断是否有保留�?
+		// 先判断是否有保留�?
 		DFA dfa = dfas.get("reserve");
 		if (dfa != null) {
-			// 从dfa的初状�?�开�?
+			// 从dfa的初状态开始
 			DFANode state = dfa.getStartNodes().get(0);
 			int i = 0;
 			for (i = 0; i < string.length(); i++) {
@@ -121,7 +129,12 @@ public class LEX {
 			}
 		}
 
-		// 遍历�?有的dfa，寻找匹配的dfa
+		// 判断&&，||，==
+				if (string.equals("&&") || string.equals("||") || string.equals("==")) {
+					return "operate," + string;
+				}
+		
+		// 遍历所有的dfa，寻找匹配的dfa
 		for (String token : dfas.keySet()) {
 
 			// 判断是否为保留字
@@ -130,7 +143,7 @@ public class LEX {
 
 			dfa = dfas.get(token);
 
-			// 从dfa的初状�?�开�?
+			// 从dfa的初状态开始
 			DFANode state = dfa.getStartNodes().get(0);
 			int i = 0;
 			for (i = 0; i < newString.length(); i++) {
